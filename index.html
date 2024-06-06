@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login und Registrierung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('bk.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"], input[type="date"], select {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .link {
+            margin-top: 15px;
+            color: #007BFF;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .help-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #007BFF;
+            cursor: pointer;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-form">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="login-email">Email-Adresse</label>
+            <input type="text" id="login-email" name="email" required>
+
+            <label for="login-password">Passwort</label>
+            <input type="password" id="login-password" name="password" required>
+
+            <input type="submit" value="Login">
+        </form>
+        <div class="link" onclick="toggleForms()">Noch kein Konto? Registrieren</div>
+    </div>
+
+    <div class="container hidden" id="register-form">
+        <h2>Registrierung</h2>
+        <form id="registerForm">
+            <label for="vorname">Vorname <span>*</span></label>
+            <input type="text" id="vorname" name="vorname" required>
+
+            <label for="nachname">Nachname <span>*</span></label>
+            <input type="text" id="nachname" name="nachname" required>
+
+            <label for="email">Email-Adresse <span>*</span></label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="geburtsdatum">Geburtsdatum <span>*</span></label>
+            <input type="date" id="geburtsdatum" name="geburtsdatum" required>
+
+            <label for="strasse">Straße <span>*</span></label>
+            <input type="text" id="strasse" name="strasse" required>
+            <span class="help-link" onclick="showMapHelp('strasse')">Adresse finden</span>
+
+            <label for="hausnummer">Hausnummer <span>*</span></label>
+            <input type="text" id="hausnummer" name="hausnummer" required>
+
+            <label for="plz">PLZ <span>*</span></label>
+            <input type="text" id="plz" name="plz" required>
+
+            <label for="stadt">Stadt <span>*</span></label>
+            <input type="text" id="stadt" name="stadt" required>
+
+            <label for="sicherheitsfrage">Sicherheitsfrage <span>*</span></label>
+            <select id="sicherheitsfrage" name="sicherheitsfrage" required>
+                <option value="">Bitte wählen</option>
+                <option value="Lehrer">Wie hieß Ihr Lieblingslehrer in der Schule?</option>
+                <option value="Film">Wie heißt Ihr Lieblingsfilm?</option>
+                <option value="Auto">Was war Ihr erstes Auto?</option>
+                <option value="Farbe">Ihre Lieblingsfarbe?</option>
+            </select>
+
+            <label for="sicherheitsantwort">Sicherheitsantwort <span>*</span></label>
+            <input type="text" id="sicherheitsantwort" name="sicherheitsantwort" required>
+
+            <label for="password">Passwort <span>*</span></label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirm_password">Passwort bestätigen <span>*</span></label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <input type="submit" value="Registrieren">
+        </form>
+        <div class="link" onclick="toggleForms()">Haben Sie ein Konto? Login</div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            document.getElementById('login-form').classList.toggle('hidden');
+            document.getElementById('register-form').classList.toggle('hidden');
+        }
+
+        function showMapHelp(fieldId) {
+            const address = document.getElementById(fieldId).value;
+            const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
+            window.open(url, '_blank');
+        }
+
+        function validatePasswords() {
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+            if (password !== confirmPassword) {
+                alert("Die Passwörter stimmen nicht überein.");
+                return false;
+            }
+            return true;
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!validatePasswords()) {
+                return;
+            }
+
+            const data = new FormData(e.target);
+            const jsonData = Object.fromEntries(data.entries());
+
+            fetch('http://your-ec2-instance-public-ip:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
