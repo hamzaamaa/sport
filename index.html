@@ -85,10 +85,10 @@
         <h2>Login</h2>
         <form id="loginForm">
             <label for="login-email">Email-Adresse</label>
-            <input type="text" id="login-email" name="email" required>
+            <input type="email" id="login-email" name="email" required autocomplete="email">
 
             <label for="login-password">Passwort</label>
-            <input type="password" id="login-password" name="password" required>
+            <input type="password" id="login-password" name="password" required autocomplete="current-password">
 
             <input type="submit" value="Login">
         </form>
@@ -99,29 +99,29 @@
         <h2>Registrierung</h2>
         <form id="registerForm">
             <label for="vorname">Vorname <span>*</span></label>
-            <input type="text" id="vorname" name="vorname" required>
+            <input type="text" id="vorname" name="vorname" required autocomplete="given-name">
 
             <label for="nachname">Nachname <span>*</span></label>
-            <input type="text" id="nachname" name="nachname" required>
+            <input type="text" id="nachname" name="nachname" required autocomplete="family-name">
 
             <label for="email">Email-Adresse <span>*</span></label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required autocomplete="email">
 
             <label for="geburtsdatum">Geburtsdatum <span>*</span></label>
-            <input type="date" id="geburtsdatum" name="geburtsdatum" required>
+            <input type="date" id="geburtsdatum" name="geburtsdatum" required autocomplete="bday">
 
             <label for="strasse">Straße <span>*</span></label>
-            <input type="text" id="strasse" name="strasse" required>
+            <input type="text" id="strasse" name="strasse" required autocomplete="address-line1">
             <span class="help-link" onclick="showMapHelp('strasse')">Adresse finden</span>
 
             <label for="hausnummer">Hausnummer <span>*</span></label>
-            <input type="text" id="hausnummer" name="hausnummer" required>
+            <input type="text" id="hausnummer" name="hausnummer" required autocomplete="address-line2">
 
             <label for="plz">PLZ <span>*</span></label>
-            <input type="text" id="plz" name="plz" required>
+            <input type="text" id="plz" name="plz" required autocomplete="postal-code">
 
             <label for="stadt">Stadt <span>*</span></label>
-            <input type="text" id="stadt" name="stadt" required>
+            <input type="text" id="stadt" name="stadt" required autocomplete="address-level2">
 
             <label for="sicherheitsfrage">Sicherheitsfrage <span>*</span></label>
             <select id="sicherheitsfrage" name="sicherheitsfrage" required>
@@ -133,13 +133,13 @@
             </select>
 
             <label for="sicherheitsantwort">Sicherheitsantwort <span>*</span></label>
-            <input type="text" id="sicherheitsantwort" name="sicherheitsantwort" required>
+            <input type="text" id="sicherheitsantwort" name="sicherheitsantwort" required autocomplete="off">
 
             <label for="password">Passwort <span>*</span></label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" required autocomplete="new-password">
 
             <label for="confirm_password">Passwort bestätigen <span>*</span></label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+            <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
 
             <input type="submit" value="Registrieren">
         </form>
@@ -178,7 +178,29 @@
             const data = new FormData(e.target);
             const jsonData = Object.fromEntries(data.entries());
 
-            fetch('http://your-ec2-instance-public-ip:3000/register', {
+            fetch('http://18.153.209.71:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const data = new FormData(e.target);
+            const jsonData = Object.fromEntries(data.entries());
+
+            fetch('http://18.153.209.71:3000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
