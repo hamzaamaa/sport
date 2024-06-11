@@ -1,11 +1,21 @@
 const express = require('express');
+const path = require('path');
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
+const port = 3000;
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware
+app.use(cors());
 app.use(bodyParser.json());
 
+// Database connection
 const db = mysql.createConnection({
     host: 'demo-rds-database.c3mq2e42ibnd.eu-central-1.rds.amazonaws.com',
     user: 'rdsuser',
@@ -22,6 +32,7 @@ db.connect(err => {
     console.log('DB connected!');
 });
 
+// Email transporter
 const transporter = nodemailer.createTransport({
     service: 'Outlook',
     auth: {
@@ -30,10 +41,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Routes
 app.post('/register', (req, res) => {
-    const { username, email, password } = req.body;
-    const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-    db.query(query, [username, email, password], (err, result) => {
+    const { vorname, nachname, email, geburtsdatum, strasse, hausnummer, plz, stadt, sicherheitsfrage, sicherheitsantwort, password } = req.body;
+    const query = 'INSERT INTO users (vorname, nachname, email, geburtsdatum, strasse, hausnummer, plz, stadt, sicherheitsfrage, sicherheitsantwort, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [vorname, nachname, email, geburtsdatum, strasse, hausnummer, plz, stadt, sicherheitsfrage, sicherheitsantwort, password], (err, result) => {
         if (err) {
             return res.status(500).send('Database error');
         }
@@ -78,6 +90,6 @@ app.post('/delete', (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
